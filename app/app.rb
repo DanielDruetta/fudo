@@ -1,9 +1,8 @@
 
 require 'rack'
 require 'json'
-require_relative './controllers/auth_controller'
-require_relative './controllers/product_controller'
-require_relative './controllers/static_controller'
+
+require_relative './routes'
 
 class MainApp
   def call(env)
@@ -11,26 +10,7 @@ class MainApp
     gzip = req.env['HTTP_ACCEPT_ENCODING']&.include?('gzip')
     res = Rack::Response.new
 
-    # Rutas principales
-    case
-    when req.request_method == 'POST' && req.path_info == '/auth'
-      status, headers, body = AuthController.new(req).login
-    when req.request_method == 'POST' && req.path_info == '/products'
-      status, headers, body = ProductController.new(req).create
-    when req.request_method == 'GET' && req.path_info == '/products'
-      status, headers, body = ProductController.new(req).index
-    when req.request_method == 'PUT' && req.path_info.match(%r{^/products/\d+$})
-      id = req.path_info.split('/').last
-      status, headers, body = ProductController.new(req).update(id)
-    when req.request_method == 'GET' && req.path_info == '/openapi.yaml'
-      status, headers, body = StaticController.new(req).openapi
-    when req.request_method == 'GET' && req.path_info == '/AUTHORS'
-      status, headers, body = StaticController.new(req).authors
-    else
-      status = 404
-      headers = { 'content-type' => 'application/json' }
-      body = [{ error: 'Not found' }.to_json]
-    end
+    status, headers, body = Routes.call(env)
 
     # Gzip para respuestas JSON/YAML/text si el cliente lo solicita
     if gzip && body && headers['content-type'] =~ /json|yaml|text/
