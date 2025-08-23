@@ -23,7 +23,7 @@ services:
   sidekiq:
     build: .
     container_name: fudo_sidekiq
-    command: bundle exec sidekiq -r ./app/app.rb
+    command: bundle exec sidekiq -r ./config/initializers/sidekiq.rb
     volumes:
       - .:/usr/src/app
     environment:
