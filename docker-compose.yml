@@ -1,7 +1,7 @@
 services:
-  app:
+  web:
     build: .
-    container_name: fudo_app
+    container_name: fudo_web
     command: bundle exec rackup --host 0.0.0.0 -p 9292
     ports:
       - '9292:9292'
