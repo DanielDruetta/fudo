@@ -1,11 +1,11 @@
 require 'sidekiq'
-require_relative './product_store'
+require_relative './models/product'
 
 class ProductWorker
   include Sidekiq::Worker
 
   def perform(name)
     sleep 5
-    ProductStore.add(name)
+    Product.create(name)
   end
 end
