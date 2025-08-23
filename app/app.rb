@@ -77,6 +77,19 @@ class MainApp
       end
       return res.finish
     
+    when ['GET', '/AUTHORS']
+      file_path = File.expand_path('../../AUTHORS', __FILE__)
+      if File.exist?(file_path)
+        res.status = 200
+        res['content-type'] = 'text/plain'
+        res['cache-control'] = 'public, max-age=86400'
+        res.write(File.read(file_path))
+      else
+        res.status = 404
+        res.write({ error: 'Not found' }.to_json)
+      end
+      return res.finish
+    
     else
       body = { error: 'Not found' }.to_json
       status = 404
