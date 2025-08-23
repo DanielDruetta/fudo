@@ -12,7 +12,8 @@ class MainApp
 
   def call(env)
     req = Rack::Request.new(env)
-    gzip = req.env['HTTP_ACCEPT_ENCODING']&.include?('gzip')
+    accept_encoding = req.env['HTTP_ACCEPT_ENCODING']
+    gzip = accept_encoding && accept_encoding.split(',').map(&:strip).include?('gzip')
     res = Rack::Response.new
 
     begin
