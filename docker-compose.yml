@@ -1,0 +1,35 @@
+services:
+  app:
+    build: .
+    container_name: fudo_app
+    command: bundle exec rackup --host 0.0.0.0 -p 9292
+    ports:
+      - '9292:9292'
+    volumes:
+      - .:/usr/src/app
+    environment:
+      - REDIS_URL=redis://redis:6379/0
+    depends_on:
+      - redis
+
+  redis:
+    image: 'redis:7-alpine'
+    container_name: fudo_redis
+    ports:
+      - '6379:6379'
+    volumes:
+      - redis_data:/data
+
+  sidekiq:
+    build: .
+    container_name: fudo_sidekiq
+    command: bundle exec sidekiq -r ./app/app.rb
+    volumes:
+      - .:/usr/src/app
+    environment:
+      - REDIS_URL=redis://redis:6379/0
+    depends_on:
+      - redis
+
+volumes:
+  redis_data:
