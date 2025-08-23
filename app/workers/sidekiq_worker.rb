@@ -1,5 +1,5 @@
 require 'sidekiq'
-require_relative './models/product'
+require_relative '../models/product'
 
 class ProductWorker
   include Sidekiq::Worker

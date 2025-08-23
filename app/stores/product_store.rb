@@ -1,5 +1,5 @@
 require 'json'
-require_relative '../config/initializers/redis'
+require_relative '../../config/initializers/redis'
 
 class ProductStore
   def self.add(name)

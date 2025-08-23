@@ -1,6 +1,6 @@
-require_relative './controllers/auth_controller'
-require_relative './controllers/product_controller'
-require_relative './controllers/static_controller'
+require_relative '../app/controllers/auth_controller'
+require_relative '../app/controllers/product_controller'
+require_relative '../app/controllers/static_controller'
 
 class Routes
   def self.call(env)

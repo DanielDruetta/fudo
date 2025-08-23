@@ -2,7 +2,7 @@ require 'rack'
 require 'json'
 require 'logger'
 
-require_relative './routes'
+require_relative '../config/routes'
 require_relative './helpers/gzip_helper'
 
 class MainApp

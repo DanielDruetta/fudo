@@ -1,5 +1,5 @@
 require_relative '../models/product'
-require_relative '../sidekiq_worker'
+require_relative '../workers/sidekiq_worker'
 
 class ProductService
   def self.create_async(name)
