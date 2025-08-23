@@ -53,6 +53,30 @@ class MainApp
         status = 200
       end
 
+    when ['GET', '/openapi.yaml']
+      file_path = File.expand_path('../../openapi.yaml', __FILE__)
+      if File.exist?(file_path)
+        res.status = 200
+        res['content-type'] = 'application/yaml'
+        res['cache-control'] = 'no-store, no-cache, must-revalidate'
+        file_content = File.read(file_path)
+        if gzip && file_content
+          require 'stringio'
+          require 'zlib'
+          io = StringIO.new
+          gz = Zlib::GzipWriter.new(io)
+          gz.write(file_content)
+          gz.close
+          file_content = io.string
+          res['content-encoding'] = 'gzip'
+        end
+        res.write(file_content)
+      else
+        res.status = 404
+        res.write({ error: 'Not found' }.to_json)
+      end
+      return res.finish
+    
     else
       body = { error: 'Not found' }.to_json
       status = 404
