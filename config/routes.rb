@@ -9,10 +9,10 @@ class Routes
     case
     when req.request_method == 'POST' && req.path_info == '/auth'
       AuthController.new(req).login
-    when req.request_method == 'POST' && req.path_info == '/products'
-      ProductController.new(req).create
     when req.request_method == 'GET' && req.path_info == '/products'
       ProductController.new(req).index
+    when req.request_method == 'POST' && req.path_info == '/products'
+      ProductController.new(req).create
     when req.request_method == 'PUT' && req.path_info.match(%r{^/products/\d+$})
       id = req.path_info.split('/').last
       ProductController.new(req).update(id)

@@ -44,6 +44,17 @@ curl -X POST http://localhost:9292/products \
   -d '{"name":"Producto de prueba"}' | gunzip
 ```
 
+
+### Actualizar producto
+
+```bash
+curl -X PUT http://localhost:9292/products/1 \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer valid-token" \
+  -H "Accept-Encoding: gzip" \
+  -d '{"name":"Producto actualizado"}' | gunzip
+```
+
 ### Consultar productos
 
 ```bash
