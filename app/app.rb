@@ -1,29 +1,32 @@
-
 require 'rack'
 require 'json'
+require 'logger'
 
 require_relative './routes'
+require_relative './helpers/gzip_helper'
 
 class MainApp
+  def initialize
+    @logger = Logger.new($stdout)
+  end
+
   def call(env)
     req = Rack::Request.new(env)
     gzip = req.env['HTTP_ACCEPT_ENCODING']&.include?('gzip')
     res = Rack::Response.new
 
-    status, headers, body = Routes.call(env)
+    begin
+      @logger.info "Request: #{req.request_method} #{req.path_info}"
+      status, headers, body = Routes.call(env)
+    rescue => e
+      @logger.error "Error: #{e.class} - #{e.message}"
+      status = 500
+      headers = { 'content-type' => 'application/json' }
+      body = [{ error: 'Internal Server Error' }.to_json]
+    end
 
-    # Gzip para respuestas JSON/YAML/text si el cliente lo solicita
     if gzip && body && headers['content-type'] =~ /json|yaml|text/
-      require 'stringio'
-      require 'zlib'
-      gz_body = body.map do |b|
-        io = StringIO.new
-        gz = Zlib::GzipWriter.new(io)
-        gz.write(b)
-        gz.close
-        io.string
-      end
-      body = gz_body
+      body = GzipHelper.compress(body)
       headers['content-encoding'] = 'gzip'
     end
 
