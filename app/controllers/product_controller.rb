@@ -9,9 +9,10 @@ class ProductController
     return unauthorized_response unless token_valid?
 
     products = ProductService.all
-    [200, { 'content-type' => 'application/json' }, [products.to_json]]
+    products_json = products.map(&:to_h).to_json
+    [200, { 'content-type' => 'application/json' }, [products_json]]
   end
-  
+
   def create
     return unauthorized_response unless token_valid?
 
@@ -32,7 +33,7 @@ class ProductController
 
     prod = ProductService.update(id, name)
     if prod
-      [200, { 'content-type' => 'application/json' }, [prod.to_json]]
+      [200, { 'content-type' => 'application/json' }, [prod.to_h.to_json]]
     else
       [404, { 'content-type' => 'application/json' }, [{ error: 'Product not found' }.to_json]]
     end

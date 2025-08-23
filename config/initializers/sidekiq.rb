@@ -1,5 +1,5 @@
 require 'sidekiq'
-require_relative '../../app/workers/sidekiq_worker'
+require_relative '../../app/workers/product_worker'
 
 Sidekiq.configure_server do |config|
   config.redis = { url: ENV['REDIS_URL'] || 'redis://localhost:6379/0' }
