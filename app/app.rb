@@ -5,7 +5,7 @@ require 'logger'
 require_relative '../config/routes'
 require_relative './helpers/gzip_helper'
 
-class MainApp
+class App
   def initialize
     @logger = Logger.new($stdout)
   end
@@ -32,7 +32,9 @@ class MainApp
     end
 
     res.status = status || 200
+    headers ||= {}
     headers.each { |k, v| res[k] = v }
+    body ||= []
     body.each { |b| res.write(b) }
     res.finish
   end
