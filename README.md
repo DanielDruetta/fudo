@@ -15,11 +15,11 @@ Aplicación Ruby con Rack que expone una API RESTful en JSON para autenticación
 1. Clona el repositorio y navega a la raíz del proyecto.
 2. Ejecuta:
 
-   ```bash
-   docker compose build
-   
-   docker compose up
-   ```
+```bash
+docker compose build
+
+docker compose up
+```
 
 Esto levantará los servicios web, sidekiq y redis.
 
@@ -75,8 +75,14 @@ curl -H "Accept-Encoding: gzip" http://localhost:9292/openapi.yaml | gunzip
 curl http://localhost:9292/AUTHORS
 ```
 
-## Notas
+## Testing
 
-- Todas las respuestas pueden ser comprimidas con gzip si el cliente lo solicita.
-- El archivo `openapi.yaml` describe la API y nunca se cachea.
-- El archivo `AUTHORS` se cachea por 24 horas.
+Este proyecto utiliza **RSpec** para pruebas.
+
+### Ejecutar los tests
+
+Ejecutar todos los tests mediante Docker:
+
+```bash
+docker compose run --rm web bundle exec rspec
+```
