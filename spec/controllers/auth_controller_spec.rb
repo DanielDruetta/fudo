@@ -43,7 +43,7 @@ RSpec.describe AuthController do
         status, headers, body = controller.login
         expect(status).to eq(400)
         expect(headers['content-type']).to eq('application/json')
-        expect(JSON.parse(body.first)['error']).to eq('Invalid parameters')
+        expect(JSON.parse(body.first)['error']).to eq('Invalid JSON')
       end
     end
   end

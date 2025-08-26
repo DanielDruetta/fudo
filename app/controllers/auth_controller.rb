@@ -4,7 +4,12 @@ class AuthController
   end
 
   def login
-    params = parse_json(@req.body.read)
+    begin
+      params = parse_json(@req.body.read)
+    rescue JSON::ParserError
+      return [400, { 'content-type' => 'application/json' }, [{ error: 'Invalid JSON' }.to_json]]
+    end
+
     unless valid_params?(params)
       return [400, { 'content-type' => 'application/json' }, [{ error: 'Invalid parameters' }.to_json]]
     end
@@ -19,7 +24,7 @@ class AuthController
   private
 
   def parse_json(body)
-    JSON.parse(body) rescue nil
+    JSON.parse(body)
   end
 
   def valid_params?(params)
