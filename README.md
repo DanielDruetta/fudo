@@ -12,8 +12,8 @@ Aplicación Ruby con Rack que expone una API RESTful en JSON para autenticación
 
 ## Cómo levantar el proyecto
 
-1. Clona el repositorio y navega a la raíz del proyecto.
-2. Ejecuta:
+1. Clonar el repositorio y navega a la raíz del proyecto.
+2. Ejecutar las siguientes comandos:
 
 ```bash
 docker compose build
@@ -31,7 +31,7 @@ Esto levantará los servicios web, sidekiq y redis.
 curl -X POST http://localhost:9292/auth \
   -H "Content-Type: application/json" \
   -H "Accept-Encoding: gzip" \
-  -d '{"user":"admin","password":"secret"}' | gunzip
+  -d '{"user":<user>,"password":<password>}' | gunzip
 ```
 
 ### Crear producto (asíncrono)
@@ -39,7 +39,7 @@ curl -X POST http://localhost:9292/auth \
 ```bash
 curl -X POST http://localhost:9292/products \
   -H "Content-Type: application/json" \
-  -H "Authorization: Bearer valid-token" \
+  -H "Authorization: Bearer <token>" \
   -H "Accept-Encoding: gzip" \
   -d '{"name":"Producto de prueba"}' | gunzip
 ```
@@ -50,7 +50,7 @@ curl -X POST http://localhost:9292/products \
 ```bash
 curl -X PUT http://localhost:9292/products/1 \
   -H "Content-Type: application/json" \
-  -H "Authorization: Bearer valid-token" \
+  -H "Authorization: Bearer <token>" \
   -H "Accept-Encoding: gzip" \
   -d '{"name":"Producto actualizado"}' | gunzip
 ```
@@ -59,7 +59,7 @@ curl -X PUT http://localhost:9292/products/1 \
 
 ```bash
 curl -X GET http://localhost:9292/products \
-  -H "Authorization: Bearer valid-token" \
+  -H "Authorization: Bearer <token>" \
   -H "Accept-Encoding: gzip" | gunzip
 ```
 
@@ -81,7 +81,7 @@ Este proyecto utiliza **RSpec** para pruebas.
 
 ### Ejecutar los tests
 
-Ejecutar todos los tests mediante Docker:
+Ejecutar los tests mediante Docker ejecutando el siguiente comando:
 
 ```bash
 docker compose run --rm web bundle exec rspec
