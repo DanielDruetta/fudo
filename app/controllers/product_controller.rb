@@ -16,9 +16,16 @@ class ProductController
   def create
     return unauthorized_response unless token_valid?
 
-    params = JSON.parse(@req.body.read)
+    begin
+      params = JSON.parse(@req.body.read)
+    rescue JSON::ParserError
+      return [400, { 'content-type' => 'application/json' }, [{ error: 'Invalid JSON' }.to_json]]
+    end
+
     name = params['name']
-    return [400, { 'content-type' => 'application/json' }, [{ error: 'Name required' }.to_json]] if name.nil? || name.strip.empty?
+    unless Product.send(:valid_name?, name)
+      return [400, { 'content-type' => 'application/json' }, [{ error: 'Name required' }.to_json]]
+    end
 
     jid = ProductService.create_async(name)
     [202, { 'content-type' => 'application/json' }, [{ message: 'Product creation scheduled', job_id: jid }.to_json]]
@@ -27,9 +34,16 @@ class ProductController
   def update(id)
     return unauthorized_response unless token_valid?
 
-    params = JSON.parse(@req.body.read)
+    begin
+      params = JSON.parse(@req.body.read)
+    rescue JSON::ParserError
+      return [400, { 'content-type' => 'application/json' }, [{ error: 'Invalid JSON' }.to_json]]
+    end
+    
     name = params['name']
-    return [400, { 'content-type' => 'application/json' }, [{ error: 'Name required' }.to_json]] if name.nil? || name.strip.empty?
+    unless Product.send(:valid_name?, name)
+      return [400, { 'content-type' => 'application/json' }, [{ error: 'Name required' }.to_json]]
+    end
 
     prod = ProductService.update(id, name)
     if prod
