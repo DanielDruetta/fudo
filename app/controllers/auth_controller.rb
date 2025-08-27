@@ -1,3 +1,7 @@
+require 'bcrypt'
+require 'securerandom'
+require_relative '../../config/initializers/redis'
+
 class AuthController
   def initialize(req)
     @req = req
@@ -15,10 +19,18 @@ class AuthController
     end
 
     if authenticate(params['user'], params['password'])
-      [200, { 'content-type' => 'application/json' }, [{ token: 'valid-token' }.to_json]]
+      token = generate_token(params['user'])
+      [200, { 'content-type' => 'application/json' }, [{ token: token }.to_json]]
     else
       [401, { 'content-type' => 'application/json' }, [{ error: 'Unauthorized' }.to_json]]
     end
+  end
+
+  def self.create_user(username, password)
+    return false unless username.is_a?(String) && password.is_a?(String) && !username.empty? && !password.empty?
+    pass_hash = BCrypt::Password.create(password)
+    REDIS.set("users:#{username}", pass_hash)
+    true
   end
 
   private
@@ -32,6 +44,14 @@ class AuthController
   end
 
   def authenticate(user, password)
-    user == 'admin' && password == 'secret'
+    pass_hash = REDIS.get("users:#{user}")
+    return false unless pass_hash
+    BCrypt::Password.new(pass_hash) == password
+  end
+
+  def generate_token(user)
+    token = SecureRandom.hex(32)
+    REDIS.setex("tokens:#{token}", 3600, user) # Persist token for 1 hour
+    token
   end
 end

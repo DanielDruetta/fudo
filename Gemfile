@@ -8,6 +8,7 @@ gem 'puma'
 gem 'redis'
 gem 'sidekiq'
 gem 'json'
+gem 'bcrypt'
 
 group :development, :test do
 	gem 'rspec'

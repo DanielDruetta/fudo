@@ -3,10 +3,15 @@ require 'json'
 require_relative '../../app/controllers/product_controller'
 
 RSpec.describe ProductController do
+  let(:redis) { double('Redis') }
   let(:headers) { { 'HTTP_AUTHORIZATION' => auth_header } }
   let(:body) { double('Body', read: body_content) }
   let(:req) { double('Request', body: body, get_header: headers['HTTP_AUTHORIZATION']) }
   let(:controller) { ProductController.new(req) }
+
+  before do
+    stub_const('REDIS', redis)
+  end
 
   describe '#index' do
     let(:body_content) { '' }
@@ -15,6 +20,7 @@ RSpec.describe ProductController do
     before { stub_const('ProductService', double(all: products)) }
 
     it 'returns 200 and products list when authorized' do
+      allow(redis).to receive(:get).with('tokens:valid-token').and_return('admin')
       status, headers, body = controller.index
       expect(status).to eq(200)
       expect(headers['content-type']).to eq('application/json')
@@ -26,6 +32,7 @@ RSpec.describe ProductController do
       let(:body_content) { '' }
       let(:auth_header) { 'Bearer invalid-token' }
       it 'returns 401' do
+        allow(redis).to receive(:get).with('tokens:invalid-token').and_return(nil)
         status, headers, body = controller.index
         expect(status).to eq(401)
         expect(JSON.parse(body.first)['error']).to eq('Unauthorized')
@@ -38,6 +45,7 @@ RSpec.describe ProductController do
     before do
       stub_const('ProductService', double(create_async: 'jid123'))
       allow(Product).to receive(:valid_name?).and_call_original
+      allow(redis).to receive(:get).with('tokens:valid-token').and_return('admin')
     end
 
     context 'with valid params' do
@@ -73,6 +81,7 @@ RSpec.describe ProductController do
       let(:auth_header) { 'Bearer invalid-token' }
       let(:body_content) { { name: 'New Product' }.to_json }
       it 'returns 401' do
+        allow(redis).to receive(:get).with('tokens:invalid-token').and_return(nil)
         status, headers, body = controller.create
         expect(status).to eq(401)
         expect(JSON.parse(body.first)['error']).to eq('Unauthorized')
@@ -87,6 +96,7 @@ RSpec.describe ProductController do
     before do
       stub_const('ProductService', double(update: prod))
       allow(Product).to receive(:valid_name?).and_call_original
+      allow(redis).to receive(:get).with('tokens:valid-token').and_return('admin')
     end
 
     context 'with valid params and product exists' do
@@ -133,6 +143,7 @@ RSpec.describe ProductController do
       let(:auth_header) { 'Bearer invalid-token' }
       let(:body_content) { { name: 'Updated' }.to_json }
       it 'returns 401' do
+        allow(redis).to receive(:get).with('tokens:invalid-token').and_return(nil)
         status, headers, body = controller.update(id)
         expect(status).to eq(401)
         expect(JSON.parse(body.first)['error']).to eq('Unauthorized')

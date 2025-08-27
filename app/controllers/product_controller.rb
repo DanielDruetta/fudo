@@ -1,4 +1,5 @@
 require_relative '../services/product_service'
+require_relative '../../config/initializers/redis'
 
 class ProductController
   def initialize(req)
@@ -56,7 +57,11 @@ class ProductController
   private
 
   def token_valid?
-    @req.get_header('HTTP_AUTHORIZATION') == 'Bearer valid-token'
+    auth_header = @req.get_header('HTTP_AUTHORIZATION')
+    return false unless auth_header&.start_with?('Bearer ')
+    token = auth_header.split(' ', 2).last
+    value = REDIS.get("tokens:#{token}")
+    !value.nil? && !value.empty?
   end
 
   def unauthorized_response
