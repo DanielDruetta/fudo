@@ -75,6 +75,24 @@ curl -H "Accept-Encoding: gzip" http://localhost:9292/openapi.yaml | gunzip
 curl http://localhost:9292/AUTHORS
 ```
 
+## Crear usuario desde consola Ruby
+
+1. Abrir consola de Ruby dentro del contenedor web:
+
+```bash
+docker exec -it fudo_web irb
+```
+
+2. Ejecutar las siguientes comandos:
+
+```bash
+require_relative 'app/controllers/auth_controller'
+
+AuthController.create_user('user', 'password')
+```
+
+Esto almacenará el usuario y la contraseña encriptada en Redis.
+
 ## Testing
 
 Este proyecto utiliza **RSpec** para pruebas.
